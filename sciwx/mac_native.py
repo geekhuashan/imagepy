@@ -1,4 +1,5 @@
 import wx
+import wx.lib.agw.aui as aui
 import platform
 import os
 import sys

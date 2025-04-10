@@ -472,9 +472,48 @@ class ImagePy(wx.Frame, App):
         self.auimgr.Update()
 
     def switch_toolbar(self, visible=None): 
-        info = self.auimgr.GetPane(self.toolbar)
-        info.Show(not info.IsShown() if visible is None else visible)
-        self.auimgr.Update()
+        try:
+            # 获取工具栏信息
+            info = self.auimgr.GetPane(self.toolbar)
+            
+            # 检查工具栏是否已被关闭
+            if not info.IsOk() or info.IsFloating() or not self.toolbar:
+                # 重新创建工具栏（如果已被完全移除）
+                if hasattr(self, 'toolbar') and self.toolbar:
+                    # 先移除现有的工具栏（如果存在）
+                    try:
+                        self.auimgr.DetachPane(self.toolbar)
+                    except:
+                        pass
+                else:
+                    # 重新创建工具栏对象
+                    self.toolbar = ToolBar(self, self.menubar)
+                
+                # 重新添加到界面
+                self.auimgr.AddPane(self.toolbar, aui.AuiPaneInfo().Name('Toolbar').
+                    Left().Layer(10).PinButton(True).Gripper(False).
+                    CaptionVisible(False).CloseButton(True).MaximizeButton(False))
+                
+                visible = True  # 强制显示
+                print('工具栏已重新创建并添加到界面')
+            
+            # 重新获取工具栏信息
+            info = self.auimgr.GetPane(self.toolbar)
+            current_state = info.IsShown()
+            
+            # 确定新状态
+            new_state = not current_state if visible is None else visible
+            
+            # 显示/隐藏工具栏
+            info.Show(new_state)
+            print(f'工具栏状态：当前={current_state}, 新状态={new_state}')
+            
+            # 刷新界面
+            self.auimgr.Update()
+            self.Refresh()
+            
+        except Exception as e:
+            print(f'切换工具栏时出错: {e}')
 
     def switch_table(self, visible=None): 
         info = self.auimgr.GetPane(self.tablenbwrap)
