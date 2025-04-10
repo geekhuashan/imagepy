@@ -5,6 +5,7 @@ sys.path.append('../../../')
 import wx.lib.agw.aui as aui
 from sciwx.mac_style import MacStyle
 from sciwx.mac_ui_enhancements import MacUIEnhancements
+from sciwx.mac_native import MacNativeUI
 from sciwx.widgets import MenuBar, RibbonBar, ToolBar, ChoiceBook, ParaDialog, WorkFlowPanel, ProgressBar
 from sciwx.canvas import CanvasNoteBook
 from sciwx.grid import GridNoteBook
@@ -46,13 +47,25 @@ class ImagePy(wx.Frame, App):
         self.Fit()
         self.Centre( wx.BOTH )
         
-        # 为 Mac 平台应用优化的界面样式
+        # 为 Mac 平台启用原生界面风格
         if platform.system() == 'Darwin':
-            MacStyle.apply_to_frame(self)
-            MacStyle.apply_to_toolbar(self.toolbar)
+            # 先启用原生 UI 设置
+            MacNativeUI.enable_native_ui()
+            
+            # 应用原生窗口风格
+            MacNativeUI.apply_to_frame(self)
+            
+            # 设置 Mac 风格的菜单
+            MacNativeUI.setup_mac_menu(self)
+            
+            # 递归修复所有控件
+            MacNativeUI.fix_controls_for_mac(self)
+            
+            # 为兼容性保留的 UI 增强
             MacUIEnhancements.enable_high_dpi_support()
-            MacUIEnhancements.setup_app_menu(self)
-            MacUIEnhancements.set_font_rendering(self)
+            
+            # 最后还可以应用一些自定义样式，但保持原生外观
+            # MacStyle.apply_to_toolbar(self.toolbar)
 
         self.Bind(wx.EVT_CLOSE, self.on_close)
         self.Bind(aui.EVT_AUI_PANE_CLOSE, self.on_pan_close)

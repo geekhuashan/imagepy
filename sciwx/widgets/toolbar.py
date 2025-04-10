@@ -55,8 +55,8 @@ class ToolBar(wx.Panel):
         
         # 为 Mac 系统提供更明显的选中状态
         if platform.system() == 'Darwin':
-            # 使用更明显的蓝色高亮
-            btn.SetBackgroundColour(wx.Colour(100, 150, 255))
+            # 使用更适合 Mac 的灰色高亮
+            btn.SetBackgroundColour(wx.Colour(225, 225, 225))
             btn.selected = True
         else:
             # 其他系统使用默认的高亮颜色
@@ -86,8 +86,8 @@ class ToolBar(wx.Panel):
                 dc = wx.PaintDC(b)
                 width, height = b.GetSize()
                 if hasattr(b, 'selected') and b.selected:
-                    # 画一个明显的边框表示选中状态
-                    dc.SetPen(wx.Pen(wx.Colour(50, 100, 255), 3))
+                    # 画一个灰色边框表示选中状态 - 保证是矩形
+                    dc.SetPen(wx.Pen(wx.Colour(120, 120, 120), 1))
                     dc.SetBrush(wx.TRANSPARENT_BRUSH)
                     dc.DrawRectangle(0, 0, width, height)
                 evt.Skip()
@@ -106,21 +106,24 @@ class ToolBar(wx.Panel):
 
     def add_tool(self, logo, tool):
         btn = wx.BitmapButton(self, wx.ID_ANY, make_logo(logo), 
-            wx.DefaultPosition, (32,32), wx.BU_AUTODRAW|wx.RAISED_BORDER )
+            wx.DefaultPosition, (32,32), wx.BU_AUTODRAW|wx.BORDER_NONE )
         self.bind(btn, tool)
-        self.GetSizer().Add(btn, 0, wx.ALL, 1)
+        # 移除按钮间的空隙
+        self.GetSizer().Add(btn, 0, wx.ALL, 0)
 
     def add_tools(self, name, tools, fixed=True):
         if not fixed: self.toolset.append((name, []))
         for logo, tool in tools:
             btn = wx.BitmapButton(self, wx.ID_ANY, make_logo(logo), 
-                wx.DefaultPosition, (32,32), wx.BU_AUTODRAW|wx.RAISED_BORDER )
+                wx.DefaultPosition, (32,32), wx.BU_AUTODRAW|wx.BORDER_NONE )
             self.bind(btn, tool)
-            self.GetSizer().Add(btn, 0, wx.ALL, 1)
+            # 移除按钮间的空隙
+            self.GetSizer().Add(btn, 0, wx.ALL, 0)
             if not fixed: self.toolset[-1][1].append(btn)
         if fixed:
             line = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
-            self.GetSizer().Add( line, 0, wx.ALL|wx.EXPAND, 2 )
+            # 调整分隔线间距
+            self.GetSizer().Add( line, 0, wx.ALL|wx.EXPAND, 0 )
 
     def active_set(self, name):
         for n, tools in self.toolset:
@@ -132,10 +135,11 @@ class ToolBar(wx.Panel):
     def add_pop(self, logo, default):
         self.GetSizer().AddStretchSpacer(1)
         btn = wx.BitmapButton(self, wx.ID_ANY, make_logo(logo), 
-                wx.DefaultPosition, (32,32), wx.BU_AUTODRAW|wx.RAISED_BORDER )
+                wx.DefaultPosition, (32,32), wx.BU_AUTODRAW|wx.BORDER_NONE )
         btn.Bind(wx.EVT_LEFT_DOWN, self.menu_drop)
         btn.SetBackgroundColour(self.GetBackgroundColour())
-        self.GetSizer().Add(btn, 0, wx.ALL, 1)
+        # 移除按钮间的空隙
+        self.GetSizer().Add(btn, 0, wx.ALL, 0)
         self.active_set(default)
 
     def menu_drop(self, event):
