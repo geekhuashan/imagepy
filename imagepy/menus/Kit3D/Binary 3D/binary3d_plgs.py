@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*
 import scipy.ndimage as ndimg
 from sciapp.action import Simple
-# 新版scikit-image中skeletonize_3d的导入路径变化
-from skimage.morphology._skeletonize import skeletonize_3d
+# 新版scikit-image中skeletonize_3d已集成到skeletonize函数中
+from skimage.morphology import skeletonize
 from imagepy.ipyalg import find_maximum, watershed
 from skimage.filters import apply_hysteresis_threshold
 from imagepy.ipyalg import distance_transform_edt
@@ -72,7 +72,8 @@ class Skeleton3D(Simple):
 
     #process
     def run(self, ips, imgs, para = None):
-        imgs[skeletonize_3d(imgs>0)==0] = 0
+        # 使用skeletonize函数处理3D图像，自动选择Lee算法
+        imgs[skeletonize(imgs>0)==0] = 0
 
 class Distance3D(Simple):
     title = 'Distance 3D'

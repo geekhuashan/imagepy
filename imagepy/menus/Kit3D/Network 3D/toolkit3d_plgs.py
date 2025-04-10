@@ -1,7 +1,7 @@
 from sciapp.action import Filter, Simple
 from imagepy.ipyalg.graph import sknw
-# 新版scikit-image中skeletonize_3d的导入路径变化
-from skimage.morphology._skeletonize import skeletonize_3d
+# 新版scikit-image中skeletonize_3d已集成到skeletonize函数中
+from skimage.morphology import skeletonize
 from itertools import combinations
 import networkx as nx
 import numpy as np
@@ -16,7 +16,8 @@ class Skeleton3D(Simple):
 
 	#process
 	def run(self, ips, imgs, para = None):
-		imgs[skeletonize_3d(imgs>0)==0] = 0
+		# 使用skeletonize函数处理3D图像，自动选择Lee算法
+		imgs[skeletonize(imgs>0)==0] = 0
 
 class BuildGraph(Simple):
 	title = 'Build Graph 3D'
