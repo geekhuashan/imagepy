@@ -12,7 +12,8 @@ import numpy as np
 from skimage.morphology import flood_fill, flood
 from skimage.measure import find_contours
 from shapely.geometry import Polygon, Point
-from shapely.ops import cascaded_union
+# 新版Shapely中cascaded_union已经被弃用，使用unary_union替代
+from shapely.ops import unary_union
 
 
 def polygonize(conts, withholes = True):
@@ -23,7 +24,7 @@ def polygonize(conts, withholes = True):
     for i in conts[1:]:
         if len(i)<4:continue
         holes.append(Polygon(i).buffer(0))
-    hole = cascaded_union(holes)
+    hole = unary_union(holes)
     return polygon.difference(hole)
 
 def magic_cont(img, x, y, conn, tor):

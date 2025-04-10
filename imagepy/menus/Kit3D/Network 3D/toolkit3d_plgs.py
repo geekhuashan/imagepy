@@ -1,6 +1,7 @@
 from sciapp.action import Filter, Simple
 from imagepy.ipyalg.graph import sknw
-from skimage.morphology import skeletonize_3d
+# 新版scikit-image中skeletonize_3d的导入路径变化
+from skimage.morphology._skeletonize import skeletonize_3d
 from itertools import combinations
 import networkx as nx
 import numpy as np

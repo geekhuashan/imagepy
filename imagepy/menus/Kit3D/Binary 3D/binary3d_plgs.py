@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*
 import scipy.ndimage as ndimg
 from sciapp.action import Simple
-from skimage.morphology import skeletonize_3d
+# 新版scikit-image中skeletonize_3d的导入路径变化
+from skimage.morphology._skeletonize import skeletonize_3d
 from imagepy.ipyalg import find_maximum, watershed
 from skimage.filters import apply_hysteresis_threshold
 from imagepy.ipyalg import distance_transform_edt

@@ -29,9 +29,9 @@ class Plugin(Free):
         for i in ls:
             current_roi = ls[i]
             roi_type = current_roi["type"]
-            if roi_type is "freehand":
+            if roi_type == "freehand":
                 rs, cs = polygon(ls[i]['y'], ls[i]['x'], img.shape)
-            elif roi_type is "oval":
+            elif roi_type == "oval":
                 rs, cs = ellipse(current_roi["top"]+current_roi["height"]/2,
                         current_roi["left"]+current_roi["width"]/2,
                         current_roi["height"]/2,
