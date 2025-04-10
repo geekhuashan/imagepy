@@ -1,7 +1,10 @@
 import wx, os, sys
 import time, threading
+import platform
 sys.path.append('../../../')
 import wx.lib.agw.aui as aui
+from sciwx.mac_style import MacStyle
+from sciwx.mac_ui_enhancements import MacUIEnhancements
 from sciwx.widgets import MenuBar, RibbonBar, ToolBar, ChoiceBook, ParaDialog, WorkFlowPanel, ProgressBar
 from sciwx.canvas import CanvasNoteBook
 from sciwx.grid import GridNoteBook
@@ -42,6 +45,14 @@ class ImagePy(wx.Frame, App):
         self.auimgr.Update()
         self.Fit()
         self.Centre( wx.BOTH )
+        
+        # 为 Mac 平台应用优化的界面样式
+        if platform.system() == 'Darwin':
+            MacStyle.apply_to_frame(self)
+            MacStyle.apply_to_toolbar(self.toolbar)
+            MacUIEnhancements.enable_high_dpi_support()
+            MacUIEnhancements.setup_app_menu(self)
+            MacUIEnhancements.set_font_rendering(self)
 
         self.Bind(wx.EVT_CLOSE, self.on_close)
         self.Bind(aui.EVT_AUI_PANE_CLOSE, self.on_pan_close)

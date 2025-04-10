@@ -1,4 +1,8 @@
 import wx
+import numpy as np
+import sys
+import os.path as osp
+import platform
 
 def hot_key(txt):
     sep = txt.split('-')
@@ -17,6 +21,13 @@ class MenuBar(wx.MenuBar):
         wx.MenuBar.__init__(self)
         self.app = app
         app.SetMenuBar(self)
+        
+        # 在 Mac 上使用原生菜单样式（必须在菜单栏附加到窗口后设置）
+        if platform.system() == 'Darwin':
+            try:
+                self.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
+            except Exception as e:
+                print("注意：无法设置菜单栏字体，这不影响使用")
 
     def parse(self, ks, vs, pt, short, rst):
         if isinstance(vs, list):

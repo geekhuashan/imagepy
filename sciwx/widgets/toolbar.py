@@ -1,4 +1,5 @@
 import wx
+import platform
 from .paradialog import ParaDialog
 
 def make_logo(obj):
@@ -41,12 +42,27 @@ class ToolBar(wx.Panel):
         tol.start(self.app)
         # evt.Skip()
         btn = evt.GetEventObject()
-        #print(self.GetBackgroundColour())
-        #print(btn.GetClassDefaultAttributes().colFg)
+        
+        # 重置之前选中的按钮
         if not self.curbtn is None:
             self.curbtn.SetBackgroundColour(self.GetBackgroundColour())
+            if hasattr(self.curbtn, 'selected'):
+                self.curbtn.selected = False
+            self.curbtn.Refresh()
+            
+        # 设置当前按钮为选中状态
         self.curbtn = btn
-        btn.SetBackgroundColour(wx.SystemSettings.GetColour( wx.SYS_COLOUR_ACTIVECAPTION ) )
+        
+        # 为 Mac 系统提供更明显的选中状态
+        if platform.system() == 'Darwin':
+            # 使用更明显的蓝色高亮
+            btn.SetBackgroundColour(wx.Colour(100, 150, 255))
+            btn.selected = True
+        else:
+            # 其他系统使用默认的高亮颜色
+            btn.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_ACTIVECAPTION))
+            
+        btn.Refresh()
 
     def on_config(self, evt, tol):
         if not hasattr(tol, 'view'): return
@@ -61,9 +77,25 @@ class ToolBar(wx.Panel):
     def bind(self, btn, tol):
         obj = tol()
         btn.SetBackgroundColour(self.GetBackgroundColour())
-        btn.Bind( wx.EVT_LEFT_DOWN, lambda e, obj=obj: self.on_tool(e, obj))
-        btn.Bind( wx.EVT_RIGHT_DOWN, lambda e, obj=obj: self.on_help(e, obj))
-        btn.Bind( wx.EVT_ENTER_WINDOW, lambda e, obj=obj: self.on_info(e, obj))
+        btn.selected = False  # 添加选中状态标记
+        
+        # 添加自定义绘制以显示选中状态
+        if platform.system() == 'Darwin':
+            # 为 Mac 添加自定义绘制
+            def on_paint(evt, b=btn):
+                dc = wx.PaintDC(b)
+                width, height = b.GetSize()
+                if hasattr(b, 'selected') and b.selected:
+                    # 画一个明显的边框表示选中状态
+                    dc.SetPen(wx.Pen(wx.Colour(50, 100, 255), 3))
+                    dc.SetBrush(wx.TRANSPARENT_BRUSH)
+                    dc.DrawRectangle(0, 0, width, height)
+                evt.Skip()
+            btn.Bind(wx.EVT_PAINT, on_paint)
+        
+        btn.Bind(wx.EVT_LEFT_DOWN, lambda e, obj=obj: self.on_tool(e, obj))
+        btn.Bind(wx.EVT_RIGHT_DOWN, lambda e, obj=obj: self.on_help(e, obj))
+        btn.Bind(wx.EVT_ENTER_WINDOW, lambda e, obj=obj: self.on_info(e, obj))
         #if not isinstance(data[0], Macros) and issubclass(data[0], Tool):
         btn.Bind(wx.EVT_LEFT_DCLICK, lambda e, obj=obj: self.on_config(e, obj))
 
